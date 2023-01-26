@@ -1,0 +1,251 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System;
+
+package hotelroombooking;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.ParseException;
+public class BookingRoom2
+{
+
+    public static boolean isValidPhoneNo(String str)
+    {
+        Pattern ptrn = Pattern.compile("[5][0-9]{7}");
+        //the matcher() method creates a matcher that will match the given input against this pattern  
+        Matcher match = ptrn.matcher(str);
+        //returns a boolean value  
+        return (match.find() && match.group().equals(str));
+    }
+
+    public static boolean isValid(String str)
+    {
+        return str.matches("[A-Z][a-z]*");
+    }
+
+    public static void book(String roomNumber, String[] room, String name)
+    {
+        for (int i = 0; i < room.length; i++)
+        {
+            if (Integer.parseInt(room[i]) == Integer.parseInt(roomNumber))
+            {
+                room[i] = "Booked by " + name;
+            }
+        }
+    }
+    public static boolean isRoomNumberValid(String roomNumber, String[] room)
+    {
+        boolean isvalid = false;
+        for (String element : room)
+        {
+            if (Integer.parseInt(element) == Integer.parseInt(roomNumber))
+            {
+                isvalid = true;
+                break;
+            }
+        }
+        return isvalid;
+    }
+
+    public static boolean valDate(String date)
+    {
+        int yearNum = Integer.parseInt(date.substring(6));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-uuuu");
+        try
+        {
+            formatter.parse(date);
+            if (yearNum >= 2023)
+            {
+                return true;
+            }
+            else
+            {
+                System.out.println("Year should be greater or equal to 2023.");
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public static void bookRoom(String[] sroom, String[] droom, String[] suroom, String[] Hroom, String name)
+    {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please select which type of room you would like to book");//in hotels there are different types of rooms that can be booked
+        System.out.println("1. Single Room");
+        System.out.println("2. Double Room");
+        System.out.println("3. Suite");
+        System.out.println("4. Hollywood Twin Room");
+        System.out.println("=================================================================");
+        String roomNumber = "", RoomType = "";
+        System.out.print("Enter choice: ");
+        String choice = input.nextLine();
+        while (!(Pattern.matches("[1-4]", choice)))
+        {
+            System.out.println("Invalid. Enter again");
+            choice = input.nextLine();
+        }
+        int convertChoice = Integer.parseInt(choice);
+        switch (convertChoice)
+        {
+            case 1:
+                RoomType = "Single";
+                System.out.println("Availability of single rooms: ");
+                System.out.println(Arrays.toString(sroom));
+                System.out.println("Please choose which room you would like to book:");
+                roomNumber = input.nextLine();
+                //validate room number
+                while (isRoomNumberValid(roomNumber, sroom) == false)
+                {
+                    System.out.print("Invalid room number. Please enter again: ");
+                    roomNumber = input.nextLine();
+                }
+                book(roomNumber, sroom, name);
+                System.out.println(Arrays.toString(sroom));
+                break;
+            case 2:
+                RoomType = "Double";
+                System.out.println("Availability of double rooms: ");
+                System.out.println(Arrays.toString(droom));
+                System.out.println("Please choose which room you would like to book:");
+                roomNumber = input.nextLine();
+                //validate room number
+                while (isRoomNumberValid(roomNumber, droom) == false)
+                {
+                    System.out.print("Invalid room number. Please enter again: ");
+                    roomNumber = input.nextLine();
+                }
+                book(roomNumber, droom, name);
+                System.out.println(Arrays.toString(droom));
+                break;
+            case 3:
+                RoomType = "Suite";
+                System.out.println("Availability of suite rooms: ");
+                System.out.println(Arrays.toString(suroom));
+                System.out.println("Please choose which room you would like to book:");
+                roomNumber = input.nextLine();
+                //validate room number
+                while (isRoomNumberValid(roomNumber, suroom) == false)
+                {
+                    System.out.print("Invalid room number. Please enter again: ");
+                    roomNumber = input.nextLine();
+                }
+                book(roomNumber, suroom, name);
+                System.out.println(Arrays.toString(suroom));
+                break;
+            case 4:
+                RoomType = "Hollywood Twin";
+                System.out.println("Availability of Hollywood Twin rooms: ");
+                System.out.println(Arrays.toString(Hroom));
+                System.out.println("Please choose which room you would like to book:");
+                roomNumber = input.nextLine();
+                //validate room number
+                while (isRoomNumberValid(roomNumber, Hroom) == false)
+                {
+                    System.out.print("Invalid room number. Please enter again: ");
+                    roomNumber = input.nextLine();
+                }
+                book(roomNumber, Hroom, name);
+                System.out.println(Arrays.toString(Hroom));
+                break;
+        }
+        System.out.println("=================================================================");
+        //Date to check in at hotel
+        System.out.print("Enter your desired starting date[dd-mm-yyyy]: ");
+        String date = input.nextLine();
+        while (valDate(date) == false)
+        {
+            System.out.print("Invalid. Date should be in format [dd-mm-yyyy]. Enter again: ");
+            date = input.nextLine();
+        }
+        //how many days to stay
+        System.out.print("Please enter the number of days you will be staying: ");
+        int days = input.nextInt();
+        while (days < 1 || days > 30)
+        {
+            System.out.print("The room can be rent for a maximum of 30 days. Enter again: ");
+            days = input.nextInt();
+        }
+        input.close();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Calendar cal = Calendar.getInstance();
+        try
+        {
+            cal.setTime(sdf.parse(date));
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        cal.add(Calendar.DAY_OF_MONTH, days);
+        String returnDate = sdf.format(cal.getTime());
+        System.out.println("=================================================================");
+        System.out.println("\nRoom successfully booked!");
+        System.out.println("You have reserved a " + RoomType + " Room with Room Number " + roomNumber + ".");
+        System.out.println("Duration of your stay is from " + date + " to " + returnDate);
+        System.out.println("Thank you " + name + ". Confirmation has been sent to you via email. :)");
+    }
+
+
+    public static void main(String[] args)throws IOException
+    {
+        Scanner input = new Scanner(System.in);
+    //room numbers which are available to be booked
+    String[] SingleRoom = { "1", "2", "3", "4", "5" };
+    String[] DoubleRoom = { "6", "7", "8", "9", "10" };
+    String[] SuiteRoom = { "11", "12", "13", "14", "15" };
+    String[] HollywoodTRoom = { "16", "17", "18", "19", "20" };
+
+    String lastname, firstname, phoneNo, email, regex;
+    System.out.println("Please enter your login information: ");
+    System.out.println("=================================================================");
+    System.out.print("Please enter your last name: ");//first name e.g Sadien
+    lastname = input.nextLine();
+		while (isValid(lastname)== false)  
+		{ 
+			System.out.print("Invalid. Please enter again: ");
+    lastname = input.nextLine();
+		}
+
+System.out.print("Please enter your first name: ");//first name e.g Sara
+firstname = input.nextLine();
+while (isValid(firstname) == false)
+{
+    System.out.print("Invalid. Please enter again: ");
+    firstname = input.nextLine();
+}
+
+System.out.print("Please enter your telephone number: ");//phone number...hotel send info via message and email e.g57696969
+phoneNo = input.nextLine();
+while (isValidPhoneNo(phoneNo) == false)
+{
+    System.out.print("Phone number is invalid. Please enter a valid phone number: ");
+    phoneNo = input.nextLine();
+}
+
+
+System.out.print("Enter your email: ");
+email = input.nextLine();
+regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";//Regular Expression
+                                                                                                                 
+Pattern pat = Pattern.compile(regex);
+while (pat.matcher(email).matches() == false)
+{
+    System.out.print("Email invalid. Please enter again: ");
+    email = input.nextLine();
+}
+System.out.println("\nSuccessful Login!");
+System.out.println("=================================================================");
+
+bookRoom(SingleRoom, DoubleRoom, SuiteRoom, HollywoodTRoom, firstname + " " + lastname);//book room
+
+input.close();}}
